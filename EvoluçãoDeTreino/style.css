@@ -62,10 +62,31 @@ button:hover {
   margin-top: 10px;
 }
 
-img.preview {
+.preview-container {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
   margin-top: 10px;
+}
+
+.preview-container img.preview {
   max-width: 100px;
   border-radius: 5px;
-  display: block;
   border: 2px solid white;
+}
+
+.preview-container button.delete-photo {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(255, 0, 0, 0.8);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  line-height: 18px;
+  padding: 0;
 }

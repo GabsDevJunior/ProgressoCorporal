@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>📆 Progresso Corporal Semanal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📆 Acompanhamento Corporal Semanal</h1>
+
+    <div class="input-section">
+      <label for="weeks">📅 Número de semanas:</label>
+      <input type="number" id="weeks" min="1" max="52" placeholder="Ex: 4">
+      <button onclick="generateWeeks()">➕ Gerar Semanas</button>
+    </div>
+
+    <div id="weeksContainer"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

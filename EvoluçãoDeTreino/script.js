@@ -1,3 +1,4 @@
+// CONFIGURAÇÕES CLOUDINARY - ajuste para seus dados reais
 const CLOUD_NAME = 'dl0onbrlm';  // Seu Cloud Name do Cloudinary
 const UPLOAD_PRESET = 'unsigned_preset'; // Nome do preset criado no Cloudinary
 
@@ -27,7 +28,6 @@ createBlocksBtn.addEventListener('click', () => {
     return;
   }
 
-  // Se a quantidade for maior, adiciona; se for menor, remove
   if (n > blocksData.length) {
     for (let i = blocksData.length; i < n; i++) {
       blocksData.push({
@@ -49,13 +49,13 @@ compareBtn.addEventListener('click', () => {
   showComparisonView();
 });
 
-// Salva no localStorage
+// Salva no localStorage e atualiza UI
 function saveAndRender() {
   localStorage.setItem('blocksData', JSON.stringify(blocksData));
   renderBlocks();
 }
 
-// Renderiza os blocos
+// Renderiza os blocos no container
 function renderBlocks() {
   blocksContainer.innerHTML = '';
   blocksData.forEach((block, index) => {
@@ -63,10 +63,10 @@ function renderBlocks() {
     blockDiv.className = 'block';
 
     blockDiv.innerHTML = `
-      <h2>📦 <input type="text" value="${block.name}" data-index="${index}" class="block-name" style="font-size:1.2rem; width: 60%;" /></h2>
+      <h2>📦 <input type="text" value="${block.name}" data-index="${index}" class="block-name" placeholder="Nome do bloco" /></h2>
       
       <label>Peso (kg):</label>
-      <input type="number" step="0.1" value="${block.peso}" data-index="${index}" class="block-peso" />
+      <input type="number" step="0.1" value="${block.peso}" data-index="${index}" class="block-peso" placeholder="Ex: 75.5" />
       
       <label>Medidas:</label>
       <input type="text" value="${block.medidas}" data-index="${index}" class="block-medidas" placeholder="Ex: 90cm cintura, 100cm peito" />
@@ -80,7 +80,7 @@ function renderBlocks() {
     blocksContainer.appendChild(blockDiv);
   });
 
-  // Add event listeners para inputs
+  // Inputs de texto e número
   document.querySelectorAll('.block-name').forEach(input => {
     input.addEventListener('input', e => {
       const i = e.target.dataset.index;
@@ -105,6 +105,7 @@ function renderBlocks() {
     });
   });
 
+  // Upload de imagens
   document.querySelectorAll('.block-file').forEach(input => {
     input.addEventListener('change', async e => {
       const i = e.target.dataset.index;
@@ -112,8 +113,7 @@ function renderBlocks() {
       if (!files.length) return;
 
       const previewDiv = blocksContainer.querySelector(`.images-preview[data-index="${i}"]`);
-      
-      // Upload e preview
+
       for (let file of files) {
         if (blocksData[i].images.length >= 3) {
           alert('Máximo 3 fotos por bloco');
@@ -129,12 +129,11 @@ function renderBlocks() {
         }
       }
 
-      // Limpar o input para poder enviar a mesma imagem de novo se quiser
-      e.target.value = '';
+      e.target.value = ''; // resetar input
     });
   });
 
-  // Renderiza as imagens salvas
+  // Renderizar imagens existentes
   blocksData.forEach((block, i) => {
     const previewDiv = blocksContainer.querySelector(`.images-preview[data-index="${i}"]`);
     if (previewDiv) {
@@ -146,7 +145,7 @@ function renderBlocks() {
   });
 }
 
-// Adiciona uma imagem no preview com botão excluir
+// Adiciona preview com botão de exclusão
 function addImagePreview(container, url, blockIndex, imageIndex) {
   const wrapper = document.createElement('div');
   wrapper.className = 'preview-container';
@@ -161,7 +160,6 @@ function addImagePreview(container, url, blockIndex, imageIndex) {
   btn.title = 'Excluir foto';
 
   btn.addEventListener('click', () => {
-    // Remove a imagem do bloco
     blocksData[blockIndex].images.splice(imageIndex, 1);
     saveAndRender();
   });
@@ -171,7 +169,7 @@ function addImagePreview(container, url, blockIndex, imageIndex) {
   container.appendChild(wrapper);
 }
 
-// Função para upload no Cloudinary
+// Upload para Cloudinary (requer preset unsigned)
 async function uploadImageToCloudinary(file) {
   const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`;
   const formData = new FormData();
@@ -270,4 +268,3 @@ function showComparisonView() {
 
   document.body.appendChild(overlay);
 }
-

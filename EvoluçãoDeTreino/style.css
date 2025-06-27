@@ -25,8 +25,9 @@ label, input, button {
   display: block;
 }
 
-input[type="number"] {
-  width: 100px;
+input[type="number"], input[type="text"] {
+  width: 100%;
+  max-width: 200px;
   padding: 5px;
   border-radius: 5px;
   border: none;
@@ -41,6 +42,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-size: 1rem;
 }
 
 button:hover {
@@ -56,10 +58,17 @@ button:hover {
 
 .block h2 {
   margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.block label {
-  margin-top: 10px;
+.block input[type="text"] {
+  font-size: 1.2rem;
+  flex-grow: 1;
+  border: none;
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .preview-container {

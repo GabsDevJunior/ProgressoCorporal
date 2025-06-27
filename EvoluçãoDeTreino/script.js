@@ -1,68 +1,91 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const weeksInput = document.getElementById('weeks');
-  const container = document.getElementById('weeksContainer');
+  const blocksInput = document.getElementById('blocks');
+  const container = document.getElementById('blocksContainer');
+  const generateBtn = document.getElementById('generateBtn');
 
-  // Restaurar semanas salvas
-  const savedWeeks = localStorage.getItem('totalWeeks');
-  if (savedWeeks) {
-    weeksInput.value = savedWeeks;
-    generateWeeks(savedWeeks);
+  // Restaurar número de blocos salvos e gerar
+  const savedBlocks = localStorage.getItem('totalBlocks');
+  if (savedBlocks) {
+    blocksInput.value = savedBlocks;
+    generateBlocks(parseInt(savedBlocks));
   }
 
-  // Botão de gerar
-  document.querySelector('button').addEventListener('click', () => {
-    const weeks = parseInt(weeksInput.value);
-    if (isNaN(weeks) || weeks < 1) {
-      alert('Por favor, insira um número válido de semanas.');
+  generateBtn.addEventListener('click', () => {
+    const blocks = parseInt(blocksInput.value);
+    if (isNaN(blocks) || blocks < 1) {
+      alert('Por favor, insira um número válido de blocos.');
       return;
     }
-    localStorage.setItem('totalWeeks', weeks);
-    generateWeeks(weeks);
+    localStorage.setItem('totalBlocks', blocks);
+    generateBlocks(blocks);
   });
 
-  function generateWeeks(weeks) {
+  function generateBlocks(blocks) {
     container.innerHTML = '';
-    for (let i = 1; i <= weeks; i++) {
-      const data = JSON.parse(localStorage.getItem(`week_${i}`)) || {
+
+    for (let i = 1; i <= blocks; i++) {
+      // Puxa dados salvos do localStorage
+      const data = JSON.parse(localStorage.getItem(`block_${i}`)) || {
+        title: `Semana ${i}`,
         weight: '',
         measures: '',
-        notes: ''
+        notes: '',
       };
 
       const block = document.createElement('div');
-      block.className = 'week-block';
+      block.className = 'block';
+
       block.innerHTML = `
-        <h2>📦 Semana ${i}</h2>
+        <h2 class="block-title" contenteditable="true" id="title_${i}">${data.title}</h2>
 
         <label>📸 Fotos (não são salvas):</label>
-        <input type="file" accept="image/*" multiple>
+        <input type="file" accept="image/*" multiple />
 
         <label>⚖️ Peso (kg):</label>
-        <input type="number" step="0.1" id="weight_${i}" value="${data.weight}">
+        <input type="number" step="0.1" id="weight_${i}" value="${data.weight}" />
 
         <label>📏 Medidas:</label>
-        <input type="text" id="measures_${i}" value="${data.measures}">
+        <input type="text" id="measures_${i}" value="${data.measures}" />
 
         <label>📝 Observações:</label>
-        <input type="text" id="notes_${i}" value="${data.notes}">
+        <input type="text" id="notes_${i}" value="${data.notes}" />
       `;
 
-      setTimeout(() => {
-        ['weight', 'measures', 'notes'].forEach(field => {
-          const input = document.getElementById(`${field}_${i}`);
-          input.addEventListener('input', () => {
-            const updated = {
-              weight: document.getElementById(`weight_${i}`).value,
-              measures: document.getElementById(`measures_${i}`).value,
-              notes: document.getElementById(`notes_${i}`).value,
-            };
-            localStorage.setItem(`week_${i}`, JSON.stringify(updated));
-          });
-        });
-      }, 100);
-
       container.appendChild(block);
+
+      // Salva as mudanças do título (com debounce simples)
+      const titleEl = document.getElementById(`title_${i}`);
+      let titleTimeout;
+      titleEl.addEventListener('input', () => {
+        clearTimeout(titleTimeout);
+        titleTimeout = setTimeout(() => {
+          saveBlock(i);
+        }, 500);
+      });
+
+      // Salva as mudanças nos inputs
+      ['weight', 'measures', 'notes'].forEach(field => {
+        const input = document.getElementById(`${field}_${i}`);
+        input.addEventListener('input', () => {
+          saveBlock(i);
+        });
+      });
     }
   }
-});
 
+  function saveBlock(i) {
+    const title = document.getElementById(`title_${i}`).textContent.trim() || `Semana ${i}`;
+    const weight = document.getElementById(`weight_${i}`).value;
+    const measures = document.getElementById(`measures_${i}`).value;
+    const notes = document.getElementById(`notes_${i}`).value;
+
+    const data = {
+      title,
+      weight,
+      measures,
+      notes,
+    };
+
+    localStorage.setItem(`block_${i}`, JSON.stringify(data));
+  }
+});
